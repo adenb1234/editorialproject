@@ -20,7 +20,7 @@ app.post('/search', (req, res) => {
     const { query } = req.body;
 
     // Convert the search query to a vector using the text_to_vector.py script
-    exec(`python3 /home/ubuntu/editorial-search-app/backend/text_to_vector.py "${query}"`, (error, stdout, stderr) => {
+    exec(`python3 /home/ubuntu/editorial-search-app/text_to_vector.py "${query}"`, (error, stdout, stderr) => {
         if (error) {
             console.error(`Error converting text to vector: ${stderr}`);
             return res.status(500).json({ error: 'Error converting text to vector' });
@@ -66,6 +66,7 @@ app.post('/search', (req, res) => {
         })
         .catch(error => {
             console.error(`Error querying Pinecone: ${error}`);
+            console.error('Pinecone response data:', error.response ? error.response.data : 'No response data');
             res.status(500).json({ error: 'Error querying Pinecone' });
         });
     });
