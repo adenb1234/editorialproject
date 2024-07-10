@@ -11,9 +11,9 @@ app.use(bodyParser.json());
 app.use(cors());
 
 // Pinecone configuration
-const apiKey = 'e638a72d-1285-46e8-83d1-dcd7e1caee10';
+const apiKey = process.env.PINECONE_API_KEY;
 const indexName = 'serverless-index';
-const pineconeUrl = `https://serverless-index-c1fd68l.svc.aped-4627-b74a.pinecone.io/vectors/query`;
+const pineconeUrl = process.env.PINECONE_ENDPOINT;
 
 // Endpoint to handle search requests
 app.post('/search', (req, res) => {
@@ -47,7 +47,7 @@ app.post('/search', (req, res) => {
         })
         .then(response => {
             // Log the entire response for debugging
-            console.log('Pinecone response:', response.data);
+            console.log('Pinecone response:', response);
 
             // Check if response.data.results is defined and is an array
             if (Array.isArray(response.data.results)) {
