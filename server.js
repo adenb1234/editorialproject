@@ -30,18 +30,15 @@ app.post('/search', (req, res) => {
 
         // Prepare the data for Pinecone query
         const data = {
-            model: "multilingual-e5-large",
-            inputs: [query],
-            parameters: {
-                input_type: "passage",
-                truncate: "END"
-            }
+            vector: vector,
+            topK: 10,
+            includeMetadata: true
         };
 
         console.log('Data prepared for Pinecone query:', data);
 
         // Send the query request to Pinecone
-        axios.post(`${pineconeUrl}/embed`, data, {
+        axios.post(`${pineconeUrl}/vectors/query`, data, {
             headers: {
                 'Api-Key': apiKey,
                 'Content-Type': 'application/json'
@@ -51,10 +48,10 @@ app.post('/search', (req, res) => {
             // Log the entire response for debugging
             console.log('Pinecone response:', response);
 
-            // Check if response.data.data is defined and is an array
-            if (Array.isArray(response.data.data)) {
+            // Check if response.data.matches is defined and is an array
+            if (Array.isArray(response.data.matches)) {
                 // Transform the Pinecone response to match the expected structure
-                const transformedResults = response.data.data.map(result => ({
+                const transformedResults = response.data.matches.map(result => ({
                     title: result.metadata.title || 'Title not available',
                     url: result.metadata.url || '#',
                     snippet: result.metadata.snippet || 'Snippet not available'
