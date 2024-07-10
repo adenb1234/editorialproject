@@ -28,19 +28,19 @@ app.post('/search', (req, res) => {
         console.log('Vector conversion output:', stdout);
         const vector = JSON.parse(stdout);
 
-        // Prepare the data for Pinecone embedding
+        // Prepare the data for Pinecone query
         const data = {
-            model: 'multilingual-e5-large',
-            inputs: [vector],
+            model: "multilingual-e5-large",
+            inputs: [query],
             parameters: {
-                input_type: 'passage',
-                truncate: 'END'
+                input_type: "passage",
+                truncate: "END"
             }
         };
 
-        console.log('Data prepared for Pinecone embedding:', data);
+        console.log('Data prepared for Pinecone query:', data);
 
-        // Send the embedding request to Pinecone
+        // Send the query request to Pinecone
         axios.post(`${pineconeUrl}/embed`, data, {
             headers: {
                 'Api-Key': apiKey,
