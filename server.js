@@ -12,7 +12,6 @@ app.use(cors());
 
 // Pinecone configuration
 const apiKey = process.env.PINECONE_API_KEY;
-const indexName = 'serverless-index';
 const pineconeUrl = process.env.PINECONE_ENDPOINT;
 
 // Endpoint to handle search requests
@@ -29,17 +28,20 @@ app.post('/search', (req, res) => {
         console.log('Vector conversion output:', stdout);
         const vector = JSON.parse(stdout);
 
-        // Prepare the data for Pinecone search
+        // Prepare the data for Pinecone embedding
         const data = {
-            vector: vector,
-            topK: 10,
-            includeMetadata: true
+            model: 'multilingual-e5-large',
+            inputs: [vector],
+            parameters: {
+                input_type: 'passage',
+                truncate: 'END'
+            }
         };
 
-        console.log('Data prepared for Pinecone search:', data);
+        console.log('Data prepared for Pinecone embedding:', data);
 
-        // Send the search request to Pinecone
-        axios.post(pineconeUrl, data, {
+        // Send the embedding request to Pinecone
+        axios.post(`${pineconeUrl}/embed`, data, {
             headers: {
                 'Api-Key': apiKey,
                 'Content-Type': 'application/json'
@@ -49,10 +51,10 @@ app.post('/search', (req, res) => {
             // Log the entire response for debugging
             console.log('Pinecone response:', response);
 
-            // Check if response.data.results is defined and is an array
-            if (Array.isArray(response.data.results)) {
+            // Check if response.data.data is defined and is an array
+            if (Array.isArray(response.data.data)) {
                 // Transform the Pinecone response to match the expected structure
-                const transformedResults = response.data.results.map(result => ({
+                const transformedResults = response.data.data.map(result => ({
                     title: result.metadata.title || 'Title not available',
                     url: result.metadata.url || '#',
                     snippet: result.metadata.snippet || 'Snippet not available'
