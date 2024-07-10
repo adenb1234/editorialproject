@@ -43,7 +43,20 @@ app.post('/search', (req, res) => {
             }
         })
         .then(response => {
-            res.json(response.data);
+            // Check if response.data.results is defined and is an array
+            if (Array.isArray(response.data.results)) {
+                // Transform the Pinecone response to match the expected structure
+                const transformedResults = response.data.results.map(result => ({
+                    title: result.metadata.title || 'Title not available',
+                    url: result.metadata.url || '#',
+                    snippet: result.metadata.snippet || 'Snippet not available'
+                }));
+
+                res.json({ results: transformedResults });
+            } else {
+                console.error('Unexpected search results structure');
+                res.status(500).json({ error: 'Unexpected search results structure' });
+            }
         })
         .catch(error => {
             console.error(`Error querying Pinecone: ${error}`);
