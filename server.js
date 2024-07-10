@@ -26,6 +26,7 @@ app.post('/search', (req, res) => {
             return res.status(500).json({ error: 'Error converting text to vector' });
         }
 
+        console.log('Vector conversion output:', stdout);
         const vector = JSON.parse(stdout);
 
         // Prepare the data for Pinecone search
@@ -34,6 +35,8 @@ app.post('/search', (req, res) => {
             topK: 10,
             includeMetadata: true
         };
+
+        console.log('Data prepared for Pinecone search:', data);
 
         // Send the search request to Pinecone
         axios.post(pineconeUrl, data, {
