@@ -43,6 +43,9 @@ app.post('/search', (req, res) => {
             }
         })
         .then(response => {
+            // Log the entire response for debugging
+            console.log('Pinecone response:', response.data);
+
             // Check if response.data.results is defined and is an array
             if (Array.isArray(response.data.results)) {
                 // Transform the Pinecone response to match the expected structure
